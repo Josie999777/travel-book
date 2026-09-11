@@ -11,7 +11,8 @@
     --ink:#211E1A; --ink2:#585349; --ink3:#8D8777;
     --line:#E6E0D0; --accent:#B5622E; --accent-bg:#F1E3D6;
     --star:#B5622E; --tk:#8D8777;
-    --land:#E1E6C7; --land-line:#C7CE9F; --land-dark:#9BA778;
+    --land:#E9E4CE; --land-line:#CFC79F;
+    --r2:#3E8E86; --r3:#8B5FA3;
     --shadow:0 1px 2px rgba(30,25,15,.05), 0 8px 22px rgba(30,25,15,.06);
   }
   @media (prefers-color-scheme:dark){
@@ -20,7 +21,8 @@
       --ink:#F1EDE3; --ink2:#C9C3B4; --ink3:#8D8777;
       --line:#3A3529; --accent:#E08A55; --accent-bg:#3A2A1C;
       --star:#E08A55; --tk:#8D8777;
-      --land:#28321F; --land-line:#3B482A; --land-dark:#5C6C3E;
+      --land:#2B2A20; --land-line:#453F2C;
+      --r2:#6FBBB2; --r3:#B98FD1;
       --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.35);
     }
   }
@@ -29,7 +31,8 @@
     --ink:#F1EDE3; --ink2:#C9C3B4; --ink3:#8D8777;
     --line:#3A3529; --accent:#E08A55; --accent-bg:#3A2A1C;
     --star:#E08A55; --tk:#8D8777;
-    --land:#28321F; --land-line:#3B482A; --land-dark:#5C6C3E;
+    --land:#2B2A20; --land-line:#453F2C;
+    --r2:#6FBBB2; --r3:#B98FD1;
     --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.35);
   }
   *{box-sizing:border-box;}
@@ -77,17 +80,27 @@
   .route-svg{width:100%; height:auto; display:block; background:var(--panel); border:1px solid var(--line);
     border-radius:14px; padding:10px; box-shadow:var(--shadow);}
   .route-svg .land{fill:var(--land); stroke:var(--land-line); stroke-width:2;}
-  .route-svg .land-dark{fill:var(--land-dark); opacity:.6;}
-  .route-svg .node-halo{fill:var(--panel); opacity:.9;}
+  .route-svg .compass line,.route-svg .compass path{stroke:var(--ink3); fill:var(--ink3);}
+  .route-svg .compass text{font-size:11px; font-weight:700; fill:var(--ink3);}
+  .route-svg .flight-ln{stroke:currentColor; stroke-width:1.6; stroke-dasharray:1 5; opacity:.5; fill:none;}
+  .route-svg .flight-lbl{font-size:9.5px; fill:currentColor; opacity:.6;}
+  .route-svg .route{fill:none; stroke-width:3; stroke-linecap:round;}
+  .route-svg .route.r1{stroke:var(--accent);}
+  .route-svg .route.r2{stroke:var(--r2);}
+  .route-svg .route.r3{stroke:var(--r3);}
+  .route-svg .node-halo{fill:var(--panel); opacity:.92;}
   .route-svg .node{fill:var(--accent);}
+  .route-svg .node.r2{fill:var(--r2);}
   .route-svg .node-ring{fill:none; stroke:var(--accent); stroke-width:1.5; opacity:.4;}
   .route-svg .node-day{fill:currentColor; opacity:.6;}
   .route-svg .node-name{font-size:13px; font-weight:700; fill:currentColor;}
   .route-svg .node-meta{font-size:9.5px; fill:currentColor; opacity:.65;}
-  .route-svg .rlbl rect{fill:var(--panel); stroke:var(--line); stroke-width:1; opacity:.92;}
-  .route-svg .rlbl text{font-size:9.5px; fill:currentColor; opacity:.8; text-anchor:middle;}
-  .route-svg .rlbl.muted text{opacity:.6;}
   .route-fig figcaption{margin-top:10px; font-size:11.5px; color:var(--ink3); line-height:1.6;}
+  .legend{margin-top:12px; display:flex; flex-direction:column; gap:7px; font-size:12.5px; color:var(--ink2);}
+  .legend .ln{display:inline-block; width:18px; height:0; border-top:3px solid var(--accent); margin-right:8px; vertical-align:2px;}
+  .legend .ln.r2{border-top-color:var(--r2);}
+  .legend .ln.r3{border-top-color:var(--r3);}
+  .legend .ln.flight{border-top:0; border-bottom:2px dashed var(--ink3); height:1px; opacity:.7;}
 
   /* ---- cards (flights) ---- */
   .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 16px;
@@ -212,73 +225,82 @@
   </nav>
 
   <!-- ============ 行程总览 ============ -->
-  <!-- 地图是可选项：可以用一段简单的路线示意 SVG，也可以先只放文字图例。
-       画法参考同仓库 SKILL.md 第 3 节；没有条件画图时，把 <svg> 换成一段文字路线概述即可。 -->
+  <!-- 这是默认应该做到的地图水准：真实地形轮廓 + 按天上色的路线 + 图例，画法见同仓库 SKILL.md 第 3 节。
+       只有资料非常简单（比如单一城市、没有跨城市移动）时才退到文字路线概述，别退到不对应
+       任何真实地方的抽象装饰图形。 -->
   <section id="overview">
     <h2 class="sec">🗺️ 行程总览</h2>
-    <div class="sec-sub">大阪 → 京都 → 奈良 → 大阪，环线自驾／公共交通均可</div>
+    <div class="sec-sub">大阪 → 京都 → 奈良一日往返 → 京都 → 大阪，关西地区环游</div>
     <figure class="route-fig">
-      <svg class="route-svg" viewBox="0 0 600 320" role="img"
-        aria-label="路线示意：大阪出发到京都住两晚，再到奈良一日往返，最后原路坐车返回大阪">
+      <svg class="route-svg" viewBox="0 0 600 400" role="img"
+        aria-label="关西地区地图：大阪入境，前往京都住两晚，中途一日往返奈良，再回大阪飞离">
         <defs>
-          <marker id="rArrow" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+          <marker id="rArrow1" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 Z" fill="var(--accent)"/>
           </marker>
-          <marker id="rArrowBack" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 Z" fill="currentColor" opacity=".5"/>
+          <marker id="rArrow2" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" fill="var(--r2)"/>
           </marker>
-          <symbol id="rPine" viewBox="0 0 16 20"><path d="M8,1 L14,11 L10.5,11 L15,19 L1,19 L5.5,11 L2,11 Z"/></symbol>
-          <symbol id="rMtn" viewBox="0 0 70 30"><path d="M0,30 L16,7 L25,18 L37,3 L49,19 L59,11 L70,30 Z"/></symbol>
+          <marker id="rArrow3" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" fill="var(--r3)"/>
+          </marker>
         </defs>
 
-        <!-- 装饰性地形背景：抽象的通用地块，不对应真实地理，任何目的地都能套用 -->
-        <path class="land" d="M42,92 C88,32 178,16 258,38 C332,58 392,20 468,42
-          C542,64 584,108 566,166 C552,212 500,204 468,240
-          C430,282 362,304 296,292 C244,282 230,254 178,262
-          C120,270 62,248 40,202 C16,152 12,128 42,92 Z"/>
+        <!-- 地形轮廓：简化的关西沿海+纪伊半岛示意，不追求测绘精度，能认出大致方位即可 -->
+        <path class="land" d="M150,35 C230,10 345,15 435,42 C488,58 515,92 503,142
+          C495,182 468,202 452,242 C433,288 406,330 366,370 C346,390 320,393 300,374
+          C277,350 267,313 246,282 C222,247 192,222 172,192 C147,157 124,126 135,86
+          C140,64 150,35 150,35 Z"/>
 
-        <use href="#rMtn" class="land-dark" x="120" y="42" width="86" height="36"/>
-        <use href="#rMtn" class="land-dark" x="415" y="34" width="72" height="30"/>
-        <use href="#rPine" class="land-dark" x="480" y="150" width="16" height="20"/>
-        <use href="#rPine" class="land-dark" x="495" y="158" width="13" height="17"/>
-        <use href="#rPine" class="land-dark" x="185" y="215" width="16" height="20"/>
-        <use href="#rPine" class="land-dark" x="200" y="223" width="13" height="17"/>
-        <use href="#rPine" class="land-dark" x="338" y="245" width="15" height="19"/>
-        <use href="#rPine" class="land-dark" x="352" y="252" width="13" height="17"/>
-        <use href="#rPine" class="land-dark" x="90" y="150" width="14" height="18"/>
+        <!-- 指北针 -->
+        <g class="compass" transform="translate(56,58)">
+          <line x1="0" y1="16" x2="0" y2="-14"/>
+          <path d="M0,-14 L-5,-4 L5,-4 Z"/>
+          <text x="0" y="30" text-anchor="middle">北</text>
+        </g>
 
-        <!-- 去程：大阪 → 京都 → 奈良 -->
-        <path d="M112,252 Q205,155 318,92" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" marker-end="url(#rArrow)"/>
-        <path d="M340,92 Q430,112 478,186" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" marker-end="url(#rArrow)"/>
-        <!-- 返程：奈良 坐车直接回大阪 -->
-        <path d="M480,200 Q298,292 128,260" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 7" opacity=".55" marker-end="url(#rArrowBack)"/>
+        <!-- 航段：虚线代表飞机，起讫点在地图边缘之外 -->
+        <path class="flight-ln" d="M14,172 L196,206"/>
+        <text class="flight-lbl" x="18" y="164">✈ 10/20 首尔 ICN 飞来</text>
+        <path class="flight-ln" d="M196,206 L14,236"/>
+        <text class="flight-lbl" x="18" y="252">✈ 10/25 飞返首尔 ICN</text>
 
-        <g class="rlbl"><rect x="180" y="150" width="66" height="17" rx="8.5"/><text x="213" y="162" text-anchor="middle">电车 约1h</text></g>
-        <g class="rlbl"><rect x="382" y="115" width="72" height="17" rx="8.5"/><text x="418" y="127" text-anchor="middle">电车 约45min</text></g>
-        <g class="rlbl muted"><rect x="262" y="270" width="76" height="17" rx="8.5"/><text x="300" y="282" text-anchor="middle">当晚坐车回大阪</text></g>
+        <!-- Day 1 大阪 → 京都 -->
+        <path class="route r1" d="M199,199 Q252,146 297,117" marker-end="url(#rArrow1)"/>
+        <!-- Day 3 京都 → 奈良 → 京都（一日往返，去程/回程各偏移几像素避免完全重叠）-->
+        <path class="route r2" d="M309,120 Q330,155 339,185" marker-end="url(#rArrow2)"/>
+        <path class="route r2" d="M333,195 Q317,161 301,129" marker-end="url(#rArrow2)"/>
+        <!-- Day 4 京都 → 大阪 -->
+        <path class="route r3" d="M303,123 Q253,168 203,216" marker-end="url(#rArrow3)"/>
 
-        <!-- 大阪：起止点，住2晚 -->
-        <circle class="node-halo" cx="112" cy="255" r="16"/>
-        <circle class="node-ring" cx="112" cy="255" r="14"/>
-        <circle class="node" cx="112" cy="255" r="8"/>
-        <text class="node-name" x="112" y="281" text-anchor="middle">大阪</text>
-        <text class="node-meta" x="112" y="294" text-anchor="middle">Day 1–2 · Day 5 · 夜1/3</text>
+        <!-- 大阪：入境/离境，住2晚 -->
+        <circle class="node-halo" cx="196" cy="206" r="15"/>
+        <circle class="node-ring" cx="196" cy="206" r="13"/>
+        <circle class="node r1" cx="196" cy="206" r="7"/>
+        <text class="node-name" x="196" y="231" text-anchor="middle">大阪</text>
+        <text class="node-meta" x="196" y="244" text-anchor="middle">Day 1–2 · 5 · 夜1/3</text>
 
         <!-- 京都：住2晚 -->
-        <circle class="node-halo" cx="330" cy="92" r="16"/>
-        <circle class="node-ring" cx="330" cy="92" r="14"/>
-        <circle class="node" cx="330" cy="92" r="8"/>
-        <text class="node-name" x="330" y="65" text-anchor="middle">京都</text>
-        <text class="node-meta" x="330" y="52" text-anchor="middle">Day 3–4 · 夜2</text>
+        <circle class="node-halo" cx="302" cy="115" r="15"/>
+        <circle class="node-ring" cx="302" cy="115" r="13"/>
+        <circle class="node r1" cx="302" cy="115" r="7"/>
+        <text class="node-name" x="302" y="88" text-anchor="middle">京都</text>
+        <text class="node-meta" x="302" y="75" text-anchor="middle">Day 2–4 · 夜2</text>
 
-        <!-- 奈良：当天往返，不过夜，所以点更小、没有外圈 -->
-        <circle class="node-halo" cx="486" cy="198" r="10"/>
-        <circle class="node node-day" cx="486" cy="198" r="6"/>
-        <text class="node-name" x="486" y="222" text-anchor="middle">奈良</text>
-        <text class="node-meta" x="486" y="235" text-anchor="middle">Day 5 · 当天往返</text>
+        <!-- 奈良：当天往返，不过夜 -->
+        <circle class="node-halo" cx="341" cy="192" r="10"/>
+        <circle class="node node-day r2" cx="341" cy="192" r="6"/>
+        <text class="node-name" x="341" y="215" text-anchor="middle">奈良</text>
+        <text class="node-meta" x="341" y="228" text-anchor="middle">Day 3 · 一日往返</text>
       </svg>
-      <figcaption>粗线是去程、虚线是当晚坐车原路返回大阪；圈越大表示在那过夜的晚数越多。地形是通用装饰底图，不对应真实地理。</figcaption>
+      <figcaption>地形为简化示意，不代表精确测绘边界；实际驾驶/换乘请以当天的 Google Maps 导航为准。</figcaption>
     </figure>
+    <div class="legend">
+      <div><span class="ln flight"></span>飞行段 · 10/20 ICN→KIX（已订）/ 10/25 KIX→ICN（已订）</div>
+      <div><span class="ln r1"></span>Day 1 · 10/21 大阪 → 京都 · 电车约 1 小时</div>
+      <div><span class="ln r2"></span>Day 3 · 10/23 京都 → 奈良 → 京都 · 电车来回约 1.5 小时</div>
+      <div><span class="ln r3"></span>Day 4 · 10/24 京都 → 大阪 · 电车约 45 分钟</div>
+    </div>
   </section>
 
   <!-- ============ 航班卡片 ============ -->
