@@ -31,7 +31,7 @@
 
 ```js
 var SYNC = {
-  enabled: false,
+  enabled: true,
   supabaseUrl: '',
   supabaseAnonKey: '',
   tripId: 'my-trip'
@@ -49,6 +49,9 @@ var SYNC = {
 };
 ```
 
+`enabled` 不用动，默认就是 `true`——只要 `supabaseUrl`/`supabaseAnonKey` 还是空字符串，
+同步代码就不会真的发起连接。需要临时强制关闭同步（比如调试）时，把它改成 `false` 即可。
+
 `tripId` 相当于这次旅行的房间号——只有 `SYNC` 配置完全一样（同一个 Supabase 项目 + 同一个
 `tripId`）的页面，待办才会同步到一起。**不要用"trip"这种容易被猜到的词**，因为同一个 Supabase
 项目下，知道 `tripId` 的人理论上都能读写这些待办（RLS 策略是按 `trip_id` 过滤，不是按访问者身份）。
@@ -58,8 +61,9 @@ var SYNC = {
 
 ## 5. 没配置的话会怎样
 
-`SYNC.enabled` 保持 `false`（默认值）时，待办清单完全退回纯本地模式，跟没有这个功能一样正常用；
-就算填错了 URL/key，页面也只会在浏览器控制台打一行警告、自动退回本地模式，不会白屏。
+`supabaseUrl`/`supabaseAnonKey` 保持空字符串（默认值）时，就算 `enabled` 是 `true`，
+待办清单也完全退回纯本地模式，跟没有这个功能一样正常用；就算填错了 URL/key，页面也只会在
+浏览器控制台打一行警告、自动退回本地模式，不会白屏。
 
 ## 费用
 

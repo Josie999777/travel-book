@@ -91,8 +91,9 @@ Google 会自动解析到最近的一家。
 
 用户如果明确要求"发出去后不同人能互相同步待办/协作编辑"这类效果，按
 `optional/supabase-sync/README.md` 的步骤配一个免费 Supabase 项目（建表 + 拿连接信息），
-再把 `SYNC.enabled` 改成 `true` 并填好 `supabaseUrl`/`supabaseAnonKey`/`tripId` 三项即可，
-不需要改其他代码。没有这个需求就保持 `SYNC.enabled: false`，页面行为不受影响。
+再填好 `supabaseUrl`/`supabaseAnonKey`/`tripId` 三项即可，不需要改其他代码——`SYNC.enabled`
+默认就是 `true`，但只要 `supabaseUrl`/`supabaseAnonKey` 还是空字符串就不会真的发起连接，
+页面会一直安全地停留在本地模式。没有同步需求就不用管这三项，保持空字符串即可。
 
 ## 3. 地图画法（可选，进阶）
 

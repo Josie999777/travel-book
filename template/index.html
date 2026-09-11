@@ -343,12 +343,15 @@
 </div>
 
 <script>
-// 跨设备/跨好友共享待办（可选）：默认关闭，页面只在本机用 localStorage 记勾选状态。
+// 跨设备/跨好友共享待办（可选）：只要 supabaseUrl / supabaseAnonKey 还是空字符串，
+// 下面的同步代码就不会真的发起连接，页面会一直安全地停留在本机 localStorage 模式——
+// 所以 enabled 默认就是 true 也没关系，不用等确认要用同步才去改它。
 // 想让不同的朋友打开同一个链接、互相加待办、互相看到对方的勾选和编辑，按
-// SKILL.md「可选：跨设备待办同步」配一个免费 Supabase 项目，把下面四项填好、
-// enabled 改成 true 就行，不用改别的代码。
+// SKILL.md「可选：跨设备待办同步」配一个免费 Supabase 项目，把下面 supabaseUrl /
+// supabaseAnonKey / tripId 三项填好就行，不用改别的代码。
+// enabled 留着是为了需要时能一键强制关闭同步（比如调试、或者想临时切回纯本地模式）。
 var SYNC = {
-  enabled: false,
+  enabled: true,
   supabaseUrl: '',       // 例如 https://xxxx.supabase.co
   supabaseAnonKey: '',   // Supabase 项目的 anon public key（公开可嵌入前端，靠 RLS 策略控权限)
   tripId: 'my-trip'      // 同一次旅行的所有人要填同一个 tripId 才会同步到一起；建议用不容易被猜到的字符串
